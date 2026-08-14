@@ -1,9 +1,10 @@
-package com.example.presentation.root
+package com.example.app.root
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import com.example.presentation.screens.list.TaskListContent
+import com.example.presentation.screens.tasklist.TaskListScreen
+import com.example.presentation.screens.taskdetail.TaskDetailScreen
 
 @Composable
 fun RootContent(component: RootComponent) {
@@ -12,7 +13,8 @@ fun RootContent(component: RootComponent) {
         animation = stackAnimation()
     ) {
         when (val child = it.instance) {
-            is RootComponent.Child.ListChild -> TaskListContent(child.component)
+            is RootComponent.Child.ListChild -> TaskListScreen(child.viewModel)
+            is RootComponent.Child.DetailChild -> TaskDetailScreen(child.viewModel)
         }
     }
 }

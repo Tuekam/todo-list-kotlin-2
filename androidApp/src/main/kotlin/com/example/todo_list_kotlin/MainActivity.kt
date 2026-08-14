@@ -5,9 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.arkivanov.decompose.defaultComponentContext
 import com.example.app.di.initKoin
-import com.example.presentation.root.RootComponent
-import com.example.presentation.root.RootContent
-import com.example.presentation.screens.list.TaskListComponent
+import com.example.app.root.RootComponent
+import com.example.app.root.RootContent
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform

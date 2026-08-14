@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -65,6 +68,14 @@ kotlin {
                 api(project(":domain"))
                 api(project(":presentation"))
                 api(libs.koin.core)
+                api(libs.decompose)
+                implementation(libs.decompose.extensions.compose)
+                
+                // Compose
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.ui)
             }
         }
 

@@ -7,6 +7,6 @@ import org.koin.dsl.module
 val domainModule = module {
     factory<GetTasksUseCase> { GetTasksUseCaseImpl(get()) }
     factory<CreateTaskUseCase> { CreateTaskUseCaseImpl(get()) }
-    factory<ToggleTaskUseCase> { ToggleTaskUseCaseImpl(get()) }
+    factory<UpdateTaskUseCase> { UpdateTaskUseCaseImpl(get()) }
     factory<DeleteTaskUseCase> { DeleteTaskUseCaseImpl(get()) }
 }

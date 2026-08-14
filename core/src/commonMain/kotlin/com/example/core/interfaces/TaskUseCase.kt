@@ -11,8 +11,8 @@ interface CreateTaskUseCase {
     suspend fun execute(title: String): Task
 }
 
-interface ToggleTaskUseCase {
-    suspend fun execute(id: String, completed: Boolean): Task
+interface UpdateTaskUseCase {
+    suspend fun execute(id: String, title: String? = null, completed: Boolean? = null): Task
 }
 
 interface DeleteTaskUseCase {
