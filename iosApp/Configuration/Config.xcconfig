@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=Todo_list_kotlin
+PRODUCT_BUNDLE_IDENTIFIER=com.example.todo_list_kotlin.Todo_list_kotlin$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
