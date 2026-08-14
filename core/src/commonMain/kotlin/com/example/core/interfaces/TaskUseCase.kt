@@ -2,9 +2,10 @@ package com.example.core.interfaces
 
 import com.example.core.models.Task
 import com.example.core.models.TaskResult
+import com.example.core.models.TaskFilters
 
 interface GetTasksUseCase {
-    suspend fun execute(): TaskResult
+    suspend fun execute(filters: TaskFilters? = null): TaskResult
 }
 
 interface CreateTaskUseCase {

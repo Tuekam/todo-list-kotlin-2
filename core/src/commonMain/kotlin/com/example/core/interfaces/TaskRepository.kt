@@ -2,9 +2,10 @@ package com.example.core.interfaces
 
 import com.example.core.models.Task
 import com.example.core.models.TaskResult
+import com.example.core.models.TaskFilters
 
 interface GetTasksRepository {
-    suspend fun getAll(): TaskResult
+    suspend fun getAll(filters: TaskFilters? = null): TaskResult
     suspend fun getById(id: String): Task?
 }
 

@@ -9,7 +9,7 @@ import org.koin.dsl.module
 
 val presentationModule = module {
     factory { (nav: TaskListNavigation, context: ComponentContext) ->
-        TaskListViewModel(nav, get(), get(), get())
+        TaskListViewModel(nav, get(), get(), get(), get())
     }
     
     factory { (taskId: String, nav: TaskDetailNavigation, context: ComponentContext) ->
