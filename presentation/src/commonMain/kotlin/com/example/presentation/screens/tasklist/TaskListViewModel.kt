@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TaskListViewModel(
-    private val navigation: TaskListNavigation,
     private val getTasksUseCase: GetTasksUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
@@ -130,9 +129,5 @@ class TaskListViewModel(
                 _state.update { it.copy(error = e.message) }
             }
         }
-    }
-
-    fun onTaskClick(task: Task) {
-        navigation.goToDetail(task.id)
     }
 }

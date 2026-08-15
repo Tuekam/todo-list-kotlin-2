@@ -3,6 +3,7 @@ package com.example.app.root
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import com.example.core.models.Task
 import com.example.presentation.screens.taskdetail.TaskDetailNavigation
 import com.example.presentation.screens.tasklist.TaskListNavigation
 import com.example.presentation.screens.tasklist.TaskListViewModel
@@ -14,6 +15,9 @@ import org.koin.core.parameter.parametersOf
 
 interface RootComponent {
     val stack: Value<ChildStack<*, Child>>
+    
+    val taskListNavigation: TaskListNavigation
+    val taskDetailNavigation: TaskDetailNavigation
 
     sealed class Child {
         class ListChild(val viewModel: TaskListViewModel) : Child()
@@ -36,18 +40,21 @@ class RootComponentImpl(
             childFactory = ::createChild
         )
 
+    override val taskListNavigation: TaskListNavigation = this
+    override val taskDetailNavigation: TaskDetailNavigation = this
+
     private fun createChild(config: Config, componentContext: ComponentContext): RootComponent.Child =
         when (config) {
             is Config.List -> RootComponent.Child.ListChild(
-                get { parametersOf(this, componentContext) }
+                get { parametersOf(componentContext) }
             )
             is Config.Detail -> RootComponent.Child.DetailChild(
-                get { parametersOf(config.taskId, this, componentContext) }
+                get { parametersOf(config.task) }
             )
         }
 
-    override fun goToDetail(taskId: String) {
-        navigation.push(Config.Detail(taskId))
+    override fun goToDetail(task: Task) {
+        navigation.push(Config.Detail(task))
     }
 
     override fun goBack() {
@@ -59,6 +66,6 @@ class RootComponentImpl(
         @Serializable
         data object List : Config()
         @Serializable
-        data class Detail(val taskId: String) : Config()
+        data class Detail(val task: Task) : Config()
     }
 }

@@ -16,7 +16,10 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskDetailScreen(viewModel: TaskDetailViewModel) {
+fun TaskDetailScreen(
+    viewModel: TaskDetailViewModel,
+    navigation: TaskDetailNavigation
+) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
@@ -24,7 +27,7 @@ fun TaskDetailScreen(viewModel: TaskDetailViewModel) {
             TopAppBar(
                 title = { Text("Détail de la tâche") },
                 navigationIcon = {
-                    IconButton(onClick = { viewModel.onBackClick() }) {
+                    IconButton(onClick = { navigation.goBack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
                     }
                 },

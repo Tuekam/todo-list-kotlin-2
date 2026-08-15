@@ -13,8 +13,14 @@ fun RootContent(component: RootComponent) {
         animation = stackAnimation()
     ) {
         when (val child = it.instance) {
-            is RootComponent.Child.ListChild -> TaskListScreen(child.viewModel)
-            is RootComponent.Child.DetailChild -> TaskDetailScreen(child.viewModel)
+            is RootComponent.Child.ListChild -> TaskListScreen(
+                viewModel = child.viewModel,
+                navigation = component.taskListNavigation
+            )
+            is RootComponent.Child.DetailChild -> TaskDetailScreen(
+                viewModel = child.viewModel,
+                navigation = component.taskDetailNavigation
+            )
         }
     }
 }

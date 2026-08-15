@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,7 +19,10 @@ import com.example.presentation.components.ConfirmationModal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskListScreen(viewModel: TaskListViewModel) {
+fun TaskListScreen(
+    viewModel: TaskListViewModel,
+    navigation: TaskListNavigation
+) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
@@ -64,7 +68,7 @@ fun TaskListScreen(viewModel: TaskListViewModel) {
                 }
             }
 
-            // 2. Bandeau de Filtres (Style Professionnel)
+            // 2. Bandeau de Filtres
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,15 +98,6 @@ fun TaskListScreen(viewModel: TaskListViewModel) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
 
-                if (!state.isLoading && state.tasks.isEmpty()) {
-                    Text(
-                        "Aucune tâche trouvée",
-                        modifier = Modifier.align(Alignment.Center),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
                 state.error?.let {
                     Text(
                         text = it,
@@ -120,7 +115,7 @@ fun TaskListScreen(viewModel: TaskListViewModel) {
                         TaskCard(
                             task = task,
                             onToggle = { viewModel.onToggleTask(task) },
-                            onClick = { viewModel.onTaskClick(task) },
+                            onEdit = { navigation.goToDetail(task) },
                             onDelete = { viewModel.requestDelete(task) }
                         )
                     }
@@ -144,11 +139,11 @@ fun TaskListScreen(viewModel: TaskListViewModel) {
 private fun TaskCard(
     task: Task,
     onToggle: () -> Unit,
-    onClick: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         border = androidx.compose.foundation.BorderStroke(
             1.dp, 
@@ -183,12 +178,11 @@ private fun TaskCard(
                     )
                 }
             }
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Modifier", tint = MaterialTheme.colorScheme.primary)
+            }
             IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete, 
-                    contentDescription = "Supprimer",
-                    tint = MaterialTheme.colorScheme.error
-                )
+                Icon(Icons.Default.Delete, contentDescription = "Supprimer", tint = MaterialTheme.colorScheme.error)
             }
         }
     }
