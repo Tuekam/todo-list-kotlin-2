@@ -5,7 +5,5 @@ import com.example.core.models.Task
 data class TaskDetailState(
     val task: Task? = null,
     val isLoading: Boolean = false,
-    val error: String? = null,
-    val isEditing: Boolean = false,
-    val editedTitle: String = ""
+    val error: String? = null
 )

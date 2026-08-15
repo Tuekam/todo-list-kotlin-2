@@ -9,6 +9,7 @@ import com.example.core.models.TaskFilters
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +29,14 @@ class TaskListViewModel(
 
     init {
         refresh()
+    }
+
+    private fun showSuccess(message: String) {
+        scope.launch {
+            _state.update { it.copy(successMessage = message) }
+            delay(2000)
+            _state.update { it.copy(successMessage = null) }
+        }
     }
 
     fun refresh() {
@@ -71,6 +80,7 @@ class TaskListViewModel(
             try {
                 createTaskUseCase.execute(title)
                 _state.update { it.copy(newTaskTitle = "") }
+                showSuccess("Tâche ajoutée avec succès")
                 refresh()
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message) }
@@ -82,6 +92,36 @@ class TaskListViewModel(
         scope.launch {
             try {
                 updateTaskUseCase.execute(id = task.id, completed = !task.completed)
+                showSuccess(if (!task.completed) "Tâche terminée" else "Tâche réouverte")
+                refresh()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    fun onStartEdit(task: Task) {
+        _state.update { it.copy(editingTaskId = task.id, editingTitle = task.title) }
+    }
+
+    fun onCancelEdit() {
+        _state.update { it.copy(editingTaskId = null, editingTitle = "") }
+    }
+
+    fun onEditingTitleChange(newTitle: String) {
+        _state.update { it.copy(editingTitle = newTitle) }
+    }
+
+    fun onSaveEdit() {
+        val taskId = _state.value.editingTaskId ?: return
+        val newTitle = _state.value.editingTitle
+        if (newTitle.isBlank()) return
+
+        scope.launch {
+            try {
+                updateTaskUseCase.execute(id = taskId, title = newTitle)
+                _state.update { it.copy(editingTaskId = null, editingTitle = "") }
+                showSuccess("Tâche modifiée")
                 refresh()
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message) }
@@ -99,7 +139,7 @@ class TaskListViewModel(
         refresh()
     }
 
-    fun onSortChange(sortBy: String) {
+    fun onSortChange(sortBy: String?) {
         _state.update { it.copy(sortBy = sortBy) }
         refresh()
     }
@@ -124,6 +164,7 @@ class TaskListViewModel(
         scope.launch {
             try {
                 deleteTaskUseCase.execute(task.id)
+                showSuccess("Tâche supprimée")
                 refresh()
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message) }

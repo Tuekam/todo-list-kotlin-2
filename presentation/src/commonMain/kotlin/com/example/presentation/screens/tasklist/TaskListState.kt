@@ -9,7 +9,10 @@ data class TaskListState(
     val hasMore: Boolean = false,
     val nextCursor: String? = null,
     
-    // Formulaire intégré
+    // Notifications
+    val successMessage: String? = null,
+    
+    // Formulaire de création intégré
     val newTaskTitle: String = "",
     
     // Filtres et Tri
@@ -19,6 +22,10 @@ data class TaskListState(
     val sortDirection: String = "desc",
     val limit: Int? = 10,
     
-    // Gestion de la suppression
+    // Modification in-place
+    val editingTaskId: String? = null,
+    val editingTitle: String = "",
+    
+    // Suppression
     val taskToDelete: Task? = null
 )

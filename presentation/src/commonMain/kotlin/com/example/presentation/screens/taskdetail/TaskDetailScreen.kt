@@ -3,15 +3,13 @@ package com.example.presentation.screens.taskdetail
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,67 +23,55 @@ fun TaskDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Détail de la tâche") },
+                title = { Text("Détails") },
                 navigationIcon = {
                     IconButton(onClick = { navigation.goBack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
-                    }
-                },
-                actions = {
-                    if (state.isEditing) {
-                        IconButton(onClick = { viewModel.onCancelEdit() }) {
-                            Icon(Icons.Default.Close, contentDescription = "Annuler")
-                        }
-                        IconButton(onClick = { viewModel.onSaveClick() }) {
-                            Icon(Icons.Default.Check, contentDescription = "Enregistrer")
-                        }
-                    } else {
-                        IconButton(onClick = { viewModel.onEditClick() }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Modifier")
-                        }
                     }
                 }
             )
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
             state.task?.let { task ->
-                Column(modifier = Modifier.padding(16.dp)) {
-                    if (state.isEditing) {
-                        OutlinedTextField(
-                            value = state.editedTitle,
-                            onValueChange = { viewModel.onTitleChange(it) },
-                            label = { Text("Titre") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    } else {
-                        Text(text = task.title, style = MaterialTheme.typography.headlineMedium)
-                    }
+                Column(modifier = Modifier.padding(24.dp).fillMaxWidth()) {
+                    Text(
+                        text = task.title, 
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
+                    Spacer(modifier = Modifier.height(32.dp))
+                    
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    
                     Spacer(modifier = Modifier.height(24.dp))
-                    
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    DetailItem(label = "Statut", value = if (task.completed) "Terminée" else "En cours")
+                    DetailItem(
+                        label = "Statut actuel", 
+                        value = if (task.completed) "Complétée ✅" else "En cours ⏳"
+                    )
                     
                     task.createdAt?.let {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        DetailItem(label = "Date de création", value = it.substringBefore("T"))
+                        Spacer(modifier = Modifier.height(20.dp))
+                        DetailItem(label = "Créée le", value = it.substringBefore("T"))
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.weight(1f))
 
-                    if (!state.isEditing) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = task.completed, onCheckedChange = { viewModel.onToggleComplete() })
-                            Text(text = "Marquer comme terminée")
-                        }
+                    Button(
+                        onClick = { viewModel.onToggleComplete() },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = if (task.completed) 
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
+                            else ButtonDefaults.buttonColors()
+                    ) {
+                        Text(
+                            text = if (task.completed) "Réouvrir la tâche" else "Marquer comme terminée",
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 }
             }
@@ -104,7 +90,17 @@ fun TaskDetailScreen(
 @Composable
 private fun DetailItem(label: String, value: String) {
     Column {
-        Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-        Text(text = value, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = label, 
+            style = MaterialTheme.typography.labelSmall, 
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = value, 
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
