@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             initKoin {
                 androidContext(this@MainActivity)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Déjà initialisé
         }
 

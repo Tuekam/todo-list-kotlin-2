@@ -5,25 +5,26 @@ import com.example.core.models.Task
 data class TaskListState(
     val tasks: List<Task> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null,
+    val isLoadingMore: Boolean = false,
+    val error: String = "",
     val hasMore: Boolean = false,
-    val nextCursor: String? = null,
-    
+    val nextCursor: String = "",
+
     // Notifications
-    val successMessage: String? = null,
-    
+    val successMessage: String = "",
+
     // Formulaire de création intégré
     val newTaskTitle: String = "",
     
     // Filtres et Tri
     val searchQuery: String = "",
     val completedFilter: Boolean? = null,
-    val sortBy: String? = "createdAt",
+    val sortBy: String = "createdAt",
     val sortDirection: String = "desc",
-    val limit: Int? = 10,
+    val limit: Int = 10,
     
-    // Modification in-place
-    val editingTaskId: String? = null,
+    // Modification
+    val editingTaskId: String = "",
     val editingTitle: String = "",
     
     // Suppression

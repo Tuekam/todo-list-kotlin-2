@@ -8,5 +8,5 @@ import com.example.core.models.TaskFilters
 class GetTasksUseCaseImpl(
     private val repository: GetTasksRepository
 ) : GetTasksUseCase {
-    override suspend fun execute(filters: TaskFilters?): TaskResult = repository.getAll(filters)
+    override suspend fun execute(filters: TaskFilters): TaskResult = repository.getAll(filters)
 }

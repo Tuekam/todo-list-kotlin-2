@@ -23,6 +23,7 @@ class TaskListViewModel(
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var refreshJob: Job? = null
+    private var loadMoreJob: Job? = null
 
     init {
         refresh()
@@ -32,19 +33,20 @@ class TaskListViewModel(
         scope.launch {
             _state.update { it.copy(successMessage = message) }
             delay(2000)
-            _state.update { it.copy(successMessage = null) }
+            _state.update { it.copy(successMessage = "") }
         }
     }
 
     fun refresh() {
         refreshJob?.cancel()
-        _state.update { it.copy(isLoading = true) }
+        loadMoreJob?.cancel()
+        _state.update { it.copy(isLoading = true, tasks = emptyList(), nextCursor = "", hasMore = false, error = "") }
         refreshJob = scope.launch {
             try {
                 val currentState = _state.value
                 val filters = TaskFilters(
                     completed = currentState.completedFilter,
-                    search = currentState.searchQuery.takeIf { it.isNotBlank() },
+                    search = currentState.searchQuery,
                     sort = currentState.sortBy,
                     direction = currentState.sortDirection,
                     limit = currentState.limit
@@ -57,12 +59,47 @@ class TaskListViewModel(
                         hasMore = result.hasMore,
                         nextCursor = result.nextCursor,
                         isLoading = false,
-                        error = null
+                        error = ""
                     )
                 }
             } catch (e: Exception) {
                 if (e !is CancellationException) {
-                    _state.update { it.copy(error = e.message, isLoading = false) }
+                    _state.update { it.copy(error = e.message ?: "Erreur inconnue", isLoading = false) }
+                }
+            }
+        }
+    }
+
+    fun loadMore() {
+        val currentState = _state.value
+        if (currentState.isLoading || currentState.isLoadingMore || !currentState.hasMore || currentState.nextCursor.isEmpty()) return
+
+        loadMoreJob?.cancel()
+        _state.update { it.copy(isLoadingMore = true) }
+        loadMoreJob = scope.launch {
+            try {
+                val filters = TaskFilters(
+                    completed = currentState.completedFilter,
+                    search = currentState.searchQuery,
+                    sort = currentState.sortBy,
+                    direction = currentState.sortDirection,
+                    limit = currentState.limit,
+                    lastDocId = currentState.nextCursor
+                )
+                
+                val result = getTasksUseCase.execute(filters)
+                _state.update {
+                    it.copy(
+                        tasks = it.tasks + result.items,
+                        hasMore = result.hasMore,
+                        nextCursor = result.nextCursor,
+                        isLoadingMore = false,
+                        error = ""
+                    )
+                }
+            } catch (e: Exception) {
+                if (e !is CancellationException) {
+                    _state.update { it.copy(error = e.message ?: "Erreur inconnue", isLoadingMore = false) }
                 }
             }
         }
@@ -83,7 +120,7 @@ class TaskListViewModel(
                 showSuccess("Tâche ajoutée avec succès")
                 refresh()
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.message ?: "Erreur inconnue") }
             }
         }
     }
@@ -95,19 +132,17 @@ class TaskListViewModel(
                 showSuccess(if (!task.completed) "Tâche terminée" else "Tâche réouverte")
                 refresh()
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.message ?: "Erreur inconnue") }
             }
         }
     }
-
-    // --- Modification In-Place ---
 
     fun onStartEdit(task: Task) {
         _state.update { it.copy(editingTaskId = task.id, editingTitle = task.title) }
     }
 
     fun onCancelEdit() {
-        _state.update { it.copy(editingTaskId = null, editingTitle = "") }
+        _state.update { it.copy(editingTaskId = "", editingTitle = "") }
     }
 
     fun onEditingTitleChange(newTitle: String) {
@@ -115,23 +150,22 @@ class TaskListViewModel(
     }
 
     fun onSaveEdit() {
-        val taskId = _state.value.editingTaskId ?: return
+        val taskId = _state.value.editingTaskId
+        if (taskId.isEmpty()) return
         val newTitle = _state.value.editingTitle
         if (newTitle.isBlank()) return
 
         scope.launch {
             try {
                 updateTaskUseCase.execute(id = taskId, title = newTitle)
-                _state.update { it.copy(editingTaskId = null, editingTitle = "") }
+                _state.update { it.copy(editingTaskId = "", editingTitle = "") }
                 showSuccess("Tâche modifiée")
                 refresh()
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.message ?: "Erreur inconnue") }
             }
         }
     }
-
-    // --- Filtres ---
 
     fun onSearchQueryChange(query: String) {
         _state.update { it.copy(searchQuery = query) }
@@ -143,13 +177,20 @@ class TaskListViewModel(
         refresh()
     }
 
-    fun onSortChange(sortBy: String?) {
-        _state.update { it.copy(sortBy = sortBy) }
+    fun onSortChange(sortBy: String) {
+        _state.update { 
+            val newDirection = if (it.sortBy == sortBy) {
+                if (it.sortDirection == "asc") "desc" else "asc"
+            } else {
+                "asc"
+            }
+            it.copy(sortBy = sortBy, sortDirection = newDirection) 
+        }
         refresh()
     }
 
     fun onLimitChange(limit: Int?) {
-        _state.update { it.copy(limit = limit) }
+        _state.update { it.copy(limit = limit ?: 10) }
         refresh()
     }
 
@@ -171,7 +212,7 @@ class TaskListViewModel(
                 showSuccess("Tâche supprimée")
                 refresh()
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.message ?: "Erreur inconnue") }
             }
         }
     }

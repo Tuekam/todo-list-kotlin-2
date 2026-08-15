@@ -7,22 +7,22 @@ data class Task(
     val id: String,
     val title: String,
     val completed: Boolean = false,
-    val createdAt: String? = null
+    val createdAt: String = ""
 )
 
 @Serializable
 data class TaskResult(
-    val items: List<Task>,
-    val nextCursor: String? = null,
+    val items: List<Task> = emptyList(),
+    val nextCursor: String = "",
     val hasMore: Boolean = false
 )
 
 @Serializable
 data class TaskFilters(
     val completed: Boolean? = null,
-    val search: String? = null,
-    val sort: String? = null,
-    val direction: String = "asc",
-    val limit: Int? = null,
-    val lastDocId: String? = null
+    val search: String = "",
+    val sort: String = "createdAt",
+    val direction: String = "desc",
+    val limit: Int = 10,
+    val lastDocId: String = ""
 )

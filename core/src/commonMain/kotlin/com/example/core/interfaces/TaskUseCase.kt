@@ -5,7 +5,7 @@ import com.example.core.models.TaskResult
 import com.example.core.models.TaskFilters
 
 interface GetTasksUseCase {
-    suspend fun execute(filters: TaskFilters? = null): TaskResult
+    suspend fun execute(filters: TaskFilters = TaskFilters()): TaskResult
 }
 
 interface CreateTaskUseCase {

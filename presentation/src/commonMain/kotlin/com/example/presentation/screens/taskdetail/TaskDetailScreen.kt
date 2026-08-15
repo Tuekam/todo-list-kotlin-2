@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.presentation.components.DetailItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,20 +43,16 @@ fun TaskDetailScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
-                    
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                    
                     Spacer(modifier = Modifier.height(24.dp))
 
                     DetailItem(
                         label = "Statut actuel", 
-                        value = if (task.completed) "Complétée " else "En cours "
+                        value = if (task.completed) "Terminée" else "En cours"
                     )
                     
-                    task.createdAt?.let {
+                    if (task.createdAt.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(20.dp))
-                        DetailItem(label = "Créée le", value = it.substringBefore("T"))
+                        DetailItem(label = "Créée le", value = task.createdAt.substringBefore("T"))
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -76,31 +73,13 @@ fun TaskDetailScreen(
                 }
             }
 
-            state.error?.let {
+            if (state.error.isNotEmpty()) {
                 Text(
-                    text = it,
+                    text = state.error,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DetailItem(label: String, value: String) {
-    Column {
-        Text(
-            text = label, 
-            style = MaterialTheme.typography.labelSmall, 
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = value, 
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
     }
 }

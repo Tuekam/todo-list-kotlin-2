@@ -5,8 +5,7 @@ import com.example.core.models.TaskResult
 import com.example.core.models.TaskFilters
 
 interface GetTasksRepository {
-    suspend fun getAll(filters: TaskFilters? = null): TaskResult
-    suspend fun getById(id: String): Task?
+    suspend fun getAll(filters: TaskFilters = TaskFilters()): TaskResult
 }
 
 interface CreateTaskRepository {

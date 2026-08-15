@@ -1,6 +1,7 @@
 package com.example.app.root
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.DelicateDecomposeApi
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.example.core.models.Task
@@ -53,6 +54,7 @@ class RootComponentImpl(
             )
         }
 
+    @OptIn(DelicateDecomposeApi::class)
     override fun goToDetail(task: Task) {
         navigation.push(Config.Detail(task))
     }

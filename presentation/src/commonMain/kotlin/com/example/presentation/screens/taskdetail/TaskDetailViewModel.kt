@@ -2,14 +2,11 @@ package com.example.presentation.screens.taskdetail
 
 import com.example.core.interfaces.UpdateTaskUseCase
 import com.example.core.models.Task
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class TaskDetailViewModel(
     initialTask: Task,
@@ -25,9 +22,9 @@ class TaskDetailViewModel(
         scope.launch {
             try {
                 val updated = updateTaskUseCase.execute(id = currentTask.id, completed = !currentTask.completed)
-                _state.update { it.copy(task = updated) }
+                _state.update { it.copy(task = updated, error = "") }
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
+                _state.update { it.copy(error = e.message ?: "Erreur inconnue") }
             }
         }
     }
