@@ -6,15 +6,11 @@ import com.example.core.interfaces.CreateTaskUseCase
 import com.example.core.interfaces.DeleteTaskUseCase
 import com.example.core.models.Task
 import com.example.core.models.TaskFilters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class TaskListViewModel(
     private val getTasksUseCase: GetTasksUseCase,
@@ -26,6 +22,7 @@ class TaskListViewModel(
     val state: StateFlow<TaskListState> = _state.asStateFlow()
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var refreshJob: Job? = null
 
     init {
         refresh()
@@ -40,8 +37,9 @@ class TaskListViewModel(
     }
 
     fun refresh() {
+        refreshJob?.cancel()
         _state.update { it.copy(isLoading = true) }
-        scope.launch {
+        refreshJob = scope.launch {
             try {
                 val currentState = _state.value
                 val filters = TaskFilters(
@@ -63,7 +61,9 @@ class TaskListViewModel(
                     )
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message, isLoading = false) }
+                if (e !is CancellationException) {
+                    _state.update { it.copy(error = e.message, isLoading = false) }
+                }
             }
         }
     }
@@ -100,6 +100,8 @@ class TaskListViewModel(
         }
     }
 
+    // --- Modification In-Place ---
+
     fun onStartEdit(task: Task) {
         _state.update { it.copy(editingTaskId = task.id, editingTitle = task.title) }
     }
@@ -128,6 +130,8 @@ class TaskListViewModel(
             }
         }
     }
+
+    // --- Filtres ---
 
     fun onSearchQueryChange(query: String) {
         _state.update { it.copy(searchQuery = query) }

@@ -38,6 +38,11 @@ fun TaskListScreen(
                         }
                     }
                 },
+                actions = {
+                    IconButton(onClick = { viewModel.refresh() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Rafraîchir")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface
@@ -48,7 +53,7 @@ fun TaskListScreen(
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             Column(modifier = Modifier.fillMaxSize()) {
                 
-                // 1. Section Filtres (Miroir Web)
+                // 1. Section Filtres
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.surface,
@@ -85,10 +90,10 @@ fun TaskListScreen(
                                     else -> "Toutes"
                                 },
                                 modifier = Modifier.weight(1f)
-                            ) {
-                                DropdownMenuItem(text = { Text("Toutes") }, onClick = { viewModel.onFilterChange(null) })
-                                DropdownMenuItem(text = { Text("Terminées") }, onClick = { viewModel.onFilterChange(true) })
-                                DropdownMenuItem(text = { Text("En cours") }, onClick = { viewModel.onFilterChange(false) })
+                            ) { close ->
+                                DropdownMenuItem(text = { Text("Toutes") }, onClick = { viewModel.onFilterChange(null); close() })
+                                DropdownMenuItem(text = { Text("Terminées") }, onClick = { viewModel.onFilterChange(true); close() })
+                                DropdownMenuItem(text = { Text("En cours") }, onClick = { viewModel.onFilterChange(false); close() })
                             }
 
                             // Tri
@@ -98,20 +103,20 @@ fun TaskListScreen(
                                     else -> "Date"
                                 },
                                 modifier = Modifier.weight(1f)
-                            ) {
-                                DropdownMenuItem(text = { Text("Date de création") }, onClick = { viewModel.onSortChange("createdAt") })
-                                DropdownMenuItem(text = { Text("Titre") }, onClick = { viewModel.onSortChange("title") })
+                            ) { close ->
+                                DropdownMenuItem(text = { Text("Date de création") }, onClick = { viewModel.onSortChange("createdAt"); close() })
+                                DropdownMenuItem(text = { Text("Titre") }, onClick = { viewModel.onSortChange("title"); close() })
                             }
 
                             // Limite
                             TaskFilterDropdown(
                                 label = state.limit?.toString() ?: "Toutes",
                                 modifier = Modifier.width(80.dp)
-                            ) {
-                                DropdownMenuItem(text = { Text("5") }, onClick = { viewModel.onLimitChange(5) })
-                                DropdownMenuItem(text = { Text("10") }, onClick = { viewModel.onLimitChange(10) })
-                                DropdownMenuItem(text = { Text("20") }, onClick = { viewModel.onLimitChange(20) })
-                                DropdownMenuItem(text = { Text("Toutes") }, onClick = { viewModel.onLimitChange(null) })
+                            ) { close ->
+                                DropdownMenuItem(text = { Text("5") }, onClick = { viewModel.onLimitChange(5); close() })
+                                DropdownMenuItem(text = { Text("10") }, onClick = { viewModel.onLimitChange(10); close() })
+                                DropdownMenuItem(text = { Text("20") }, onClick = { viewModel.onLimitChange(20); close() })
+                                DropdownMenuItem(text = { Text("Toutes") }, onClick = { viewModel.onLimitChange(null); close() })
                             }
                         }
                     }
@@ -167,7 +172,7 @@ fun TaskListScreen(
                 }
             }
 
-            // 4. Notification Flash (Top Popup)
+            // 4. Notification Flash
             AnimatedVisibility(
                 visible = state.successMessage != null,
                 enter = fadeIn() + slideInVertically(),

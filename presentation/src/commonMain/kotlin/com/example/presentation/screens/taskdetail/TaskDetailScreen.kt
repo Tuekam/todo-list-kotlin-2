@@ -50,7 +50,7 @@ fun TaskDetailScreen(
 
                     DetailItem(
                         label = "Statut actuel", 
-                        value = if (task.completed) "Complétée ✅" else "En cours ⏳"
+                        value = if (task.completed) "Complétée " else "En cours "
                     )
                     
                     task.createdAt?.let {
@@ -69,7 +69,7 @@ fun TaskDetailScreen(
                             else ButtonDefaults.buttonColors()
                     ) {
                         Text(
-                            text = if (task.completed) "Réouvrir la tâche" else "Marquer comme terminée",
+                            text = if (task.completed) "Marquer comme non terminée" else "Marquer comme terminée",
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
