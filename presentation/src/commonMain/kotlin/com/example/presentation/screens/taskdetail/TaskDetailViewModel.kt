@@ -33,7 +33,7 @@ class TaskDetailViewModel(
         scope.launch {
             try {
                 val task = repository.getById(taskId)
-                _state.update { it.copy(task = task, isLoading = false) }
+                _state.update { it.copy(task = task, isLoading = false, editedTitle = task?.title ?: "") }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message, isLoading = false) }
             }
@@ -52,11 +52,26 @@ class TaskDetailViewModel(
         }
     }
 
-    fun onDelete() {
+    fun onEditClick() {
+        _state.update { it.copy(isEditing = true) }
+    }
+
+    fun onCancelEdit() {
+        _state.update { it.copy(isEditing = false, editedTitle = it.task?.title ?: "") }
+    }
+
+    fun onTitleChange(newTitle: String) {
+        _state.update { it.copy(editedTitle = newTitle) }
+    }
+
+    fun onSaveClick() {
+        val newTitle = _state.value.editedTitle
+        if (newTitle.isBlank()) return
+
         scope.launch {
             try {
-                deleteTaskUseCase.execute(taskId)
-                navigation.goBack()
+                val updated = updateTaskUseCase.execute(id = taskId, title = newTitle)
+                _state.update { it.copy(task = updated, isEditing = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message) }
             }

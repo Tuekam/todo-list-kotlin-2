@@ -46,12 +46,10 @@ class RootComponentImpl(
             )
         }
 
-    // TaskListNavigation Implementation
     override fun goToDetail(taskId: String) {
         navigation.push(Config.Detail(taskId))
     }
 
-    // TaskDetailNavigation Implementation
     override fun goBack() {
         navigation.pop()
     }

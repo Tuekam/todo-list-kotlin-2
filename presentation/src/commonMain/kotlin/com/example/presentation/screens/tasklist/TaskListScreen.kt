@@ -149,10 +149,15 @@ private fun TaskCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = MaterialTheme.shapes.medium,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp, 
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (task.completed) 
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) 
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f) 
                 else MaterialTheme.colorScheme.surface
         )
     ) {
