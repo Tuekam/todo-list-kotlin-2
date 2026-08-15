@@ -1,4 +1,4 @@
-package com.example.todo_list_kotlin
+package com.example.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,8 +24,8 @@ class MainActivity : ComponentActivity() {
             // Déjà initialisé
         }
 
-        // Utilisation de Koin pour récupérer le RootComponent de manière abstraite
-        val root: RootComponent = KoinPlatform.getKoin().get<RootComponent> { 
+        // Récupération du RootComponent via Koin
+        val root: RootComponent = KoinPlatform.getKoin().get { 
             parametersOf(defaultComponentContext()) 
         }
 

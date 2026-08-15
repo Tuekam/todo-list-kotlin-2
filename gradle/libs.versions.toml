@@ -47,6 +47,7 @@ androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 # Decompose
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+decompose-android = { module = "com.arkivanov.decompose:extensions-android", version.ref = "decompose" }
 
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
